@@ -1,33 +1,35 @@
-from collections import deque
 import sys
+from collections import deque
 input = sys.stdin.readline
 
-n,m = map(int,input().split())
-link = [[] for _ in range(n+1)]
-for _ in range(m):
-    a,b = map(int,input().split())
-    # 선택한 노드부터 쭉 뻗어나갈 것이므로 링크를 반대로 달아준다.
-    link[b].append(a)
+n, m = map(int, input().split())
+graph = [[] for _ in range(n+1)]
 
-maxLink,ans = 0,[]
-for i in range(1,n+1):
-    visited = [False]*(n+1)
-    visited[i] = True
-    q = deque([i])
-    
-    # BFS
+for _ in range(m):
+    a, b = map(int, input().split())
+    graph[b].append(a)   # b -> a (b를 해킹하면 a 해킹 가능)
+
+def bfs(start):
+    visited = [0] * (n+1)
+    q = deque([start])
+    visited[start] = 1
     cnt = 0
     while q:
-        v = q.popleft()
-        for toNode in link[v]:
-            if not visited[toNode]:
-                visited[toNode] = True
+        x = q.popleft()
+        for nxt in graph[x]:
+            if not visited[nxt]:
+                visited[nxt] = 1
                 cnt += 1
-                q.append(toNode)
-    
-    if cnt > maxLink:
-        maxLink = cnt
-        ans = [i]
-    elif cnt == maxLink:
-        ans.append(i)
-print(*ans)
+                q.append(nxt)
+    return cnt
+
+ans = [0] * (n+1)
+mx = 0
+
+for i in range(1, n+1):
+    ans[i] = bfs(i)
+    mx = max(mx, ans[i])
+
+for i in range(1, n+1):
+    if ans[i] == mx:
+        print(i, end=' ')
