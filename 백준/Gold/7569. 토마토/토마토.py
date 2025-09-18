@@ -1,48 +1,63 @@
 import sys
 from collections import deque
+
 input=sys.stdin.readline
 
+###################################################################
+
 m,n,h=map(int,input().split())
-box=[] # z,y,x
+tomato=[]
 
-for i in range(h):
-    box.append([])
-    for j in range(n):
-        box[i].append(list(map(int,input().split())))
+tomato = []
+for _ in range(h):
+    layer = [list(map(int,input().split())) for _ in range(n)]
+    tomato.append(layer)   # tomato[z][y][x] 가능
 
-Q=deque() # z,y,x
+## 이미 다 익고 시작한 경우############################
+flag = True
+for z in range(h):
+    for y in range(n):
+        if 0 in tomato[z][y]:
+            flag = False
+            break
 
+if flag:
+    print(0)
+    exit()
+###################################################
+
+# 상 하 좌 우 위 아래
+dx=[0,0,-1,1, 0, 0]
+dy=[1,-1,0,0, 0, 0]
+dz=[0, 0, 0, 0, 1, -1]
+
+q=deque([])
+
+def bfs():
+    while q:
+        z, y,x=q.popleft()
+        for i in range(6):
+            nx,ny,nz=x+dx[i],y+dy[i],z+dz[i]
+            if 0<=ny<n and 0<=nx<m and 0<=nz<h and tomato[nz][ny][nx]==0:
+                tomato[nz][ny][nx]=tomato[z][y][x]+1
+                q.append((nz,ny,nx))
+
+for k in range(h):
+    for i in range(n):
+        for j in range(m):
+            if tomato[k][i][j] == 1:
+                q.append([k, i, j])
+
+bfs()
+
+##########최종 답 출력################################
+ans = 0
 for z in range(h):
     for y in range(n):
         for x in range(m):
-            if box[z][y][x]==1:
-                Q.append([z,y,x])
-
-dx=[0,0,0,0,-1,1]
-dy=[0,0,1,-1,0,0]
-dz=[1,-1,0,0,0,0]
-
-while Q:
-    length=len(Q)
-
-    for _ in range(length):
-        z,y,x=Q.popleft()
-
-        for i in range(6):
-            nx,ny,nz=x+dx[i],y+dy[i],z+dz[i]
-
-            if 0<=nx<m and 0<=ny<n and 0<=nz<h and box[nz][ny][nx]==0:
-                box[nz][ny][nx]=box[z][y][x]+1
-                Q.append([nz,ny,nx])
-
-day=0
-
-for tray in box:
-    for row in tray:
-        for tomato in row:
-            if tomato==0:
+            if tomato[z][y][x] == 0:
                 print(-1)
-                exit(0)
-        day=max(day,max(row))
+                exit()
+        ans = max(ans, max(tomato[z][y]))
 
-print(day-1)
+print(ans-1)
