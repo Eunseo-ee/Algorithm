@@ -1,42 +1,44 @@
 import sys
 from collections import deque
-input = sys.stdin.readline
+
+input=sys.stdin.readline
+
+###################################################################
 
 dx=[1,2,2,1,-1,-2,-2,-1]
 dy=[2,1,-1,-2,-2,-1,1,2]
 
-tmp=1000000000000
-
-def bfs(x1, y1, x2, y2, n):
-    queue=deque([(x1,y1,0)])
-    visited = set([(x1, y1)])
+def bfs(start_x, start_y, n):
+    q=deque([(start_x, start_y, 0)])
+    visited=set([start_x, start_y])
     cnt=0
 
-    while queue:
-        x,y,cnt=queue.popleft()
+    while q:
+        x,y, cnt=q.popleft()
 
-        if x==x2 and y==y2:
+        if x == end_x and y == end_y:
             return cnt
 
         for i in range(8):
-            nx=x+dx[i]
-            ny=y+dy[i]
+            nx,ny=x+dx[i], y+dy[i]
 
-            if 0 <= nx < n and 0 <= ny < n and (nx, ny) not in visited:
-                visited.add((nx,ny))
-                queue.append((nx,ny,cnt+1))
+            if 0 <= nx < l and 0 <= ny < l and (nx, ny) not in visited:
+                q.append((nx, ny, cnt + 1))
+                visited.add((nx, ny))
+
     return -1
-
 
 t=int(input())
 
-for _ in range(t):
-    n=int(input())
-    x1,y1=map(int,input().split()) # start
-    x2,y2=map(int,input().split()) # departure
+for i in range(t):
+    l=int(input())
 
-    if x1==x2 and y1==y2:
+    start_x, start_y=map(int,input().split())
+    end_x, end_y=map(int,input().split())
+
+    if start_x==end_x and start_y==end_y:
         print(0)
         continue
 
-    print(bfs(x1, y1, x2, y2, n))
+    cnt=0
+    print(bfs(start_x, start_y, 0))
