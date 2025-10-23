@@ -19,14 +19,14 @@ for i in range(m):
     prev_len = len(cloud)
     # 이전에 구름 제거된 위치
     ex_cloud = []
-    new_cloud = []
+    new_cloud = set()
 
     # 1. 이동
     for y, x in cloud:
         ny = (y + dy[d] * s) % n
         nx = (x + dx[d] * s) % n
 
-        new_cloud.append((ny, nx))
+        new_cloud.add((ny, nx))
 
     cloud = new_cloud
 
