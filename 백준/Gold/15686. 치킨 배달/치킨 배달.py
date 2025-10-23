@@ -1,45 +1,44 @@
-import itertools
 import sys
 from collections import deque
-input=sys.stdin.readline
+from itertools import combinations
 
-def length(x,y, comp):
+input = sys.stdin.readline
+
+dx,dy=[0,0,-1,1],[1,-1,0,0]
+
+def length(x,y,comb):
     ans=float('inf')
-    for i in comp:
+
+    for i in comb:
         tmp=abs(i[1]-x)+abs(i[0]-y)
-        ans=min(tmp,ans)
+        ans=min(ans,tmp)
+
     return ans
 
-# 0: none 1 : 집 2 : 치킨집
-
 n,m=map(int,input().split())
-chk=[]
-combi=[]
+graph=[]
+ans=10000000
+chicken=[]
+house=[]
 
 for i in range(n):
-    now=list(map(int,input().split()))
-    for j in range(n):
-        if now[j]==2:
-            combi.append([i,j])
-    chk.append(now)
+    x=list(map(int,input().split()))
 
-if len(combi)>m:
-    combi=list(itertools.combinations(combi, m))
-    compare = []
-    for i in range(len(combi)):
-        tmp = 0
-        for x in range(n):
-            for y in range(n):
-                if chk[y][x] == 1:
-                    tmp += length(x, y, combi[i])
-        compare.append(tmp)
-else:
-    compare = []
-    tmp = 0
-    for x in range(n):
-        for y in range(n):
-            if chk[y][x]==1:
-                tmp += length(x, y, combi)
-    compare.append(tmp)
+    for j in range(n):
+        if x[j]==2: # 치킨집
+            chicken.append((i,j))
+        elif x[j]==1: # 집
+            house.append((i,j))
+    graph.append(x)
+# 0 : 빈칸 1 : 집 2 : 치킨집
+
+step=list(combinations(chicken,m))
+compare=[]
+
+for i in range(len(step)):
+    tmp_ans=0
+    for y,x in house:
+        tmp_ans+=length(x,y,step[i])
+    compare.append(tmp_ans)
 
 print(min(compare))
