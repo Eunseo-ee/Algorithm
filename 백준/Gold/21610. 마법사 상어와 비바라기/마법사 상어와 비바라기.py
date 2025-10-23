@@ -18,7 +18,7 @@ for i in range(m):
     d, s = map(int, input().split())
     prev_len = len(cloud)
     # 이전에 구름 제거된 위치
-    ex_cloud = []
+    ex_cloud = set()
     new_cloud = set()
 
     # 1. 이동
@@ -36,7 +36,7 @@ for i in range(m):
 
     # 3. 구름 없애고 4. 대각선 방향 칸에도 물 추가
     for y, x in cloud:
-        ex_cloud.append((y, x))
+        ex_cloud.add((y, x))
 
         cnt = 0
         for step in [2, 4, 6, 8]:
