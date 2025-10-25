@@ -1,71 +1,57 @@
 import sys
 from collections import deque
-import copy
+from itertools import combinations
 
 input = sys.stdin.readline
 
-###################################################################
-
-dx=[0,0,-1,1]
-dy=[1,-1,0,0]
-def dfs(start):
-    if len(s) == 3:
-        check.append(s[:])
-        return
-
-    for i in range(start, len(empty)):
-        s.append(empty[i])
-        dfs(i + 1)
-        s.pop()
+dx = [0, 0, -1, 1]
+dy = [1, -1, 0, 0]
 
 
 def bfs(start_x, start_y):
-    q=deque([(start_x, start_y)])
+    q = deque([(start_x, start_y)])
 
     while q:
-        x,y=q.popleft()
+        x, y = q.popleft()
 
         for i in range(4):
-            nx,ny=x+dx[i],y+dy[i]
+            nx, ny = x + dx[i], y + dy[i]
 
-            if 0<=nx<m and 0<=ny<n and visited[ny][nx]==0:
-                visited[ny][nx]=2
-                q.append((nx,ny))
+            if 0 <= nx < m and 0 <= ny < n and tmp[ny][nx] == 0:
+                q.append((nx, ny))
+                tmp[ny][nx] = 2
+
 
 n, m = map(int, input().split())
 graph = []
-empty = []
-virus=[]
-s = []
-check = []  # dfs 돌려서 찾은 조합들
+not_wall = []
+virus = []
 
+# 0:빈 칸 1:벽 2:바이러스가 있는 위치
 for i in range(n):
-    graph.append(list(map(int, input().split())))
-
-for i in range(n):
+    x = list(map(int, input().split()))
     for j in range(m):
-        if graph[i][j] == 0:
-            empty.append((i, j))
-        if graph[i][j]==2:
+        if x[j] == 0:
+            not_wall.append((i, j))
+        elif x[j] == 2:
             virus.append((i, j))
+    graph.append(x)
 
-ans=0
-dfs(0)  # 빈칸들 다 확인
+crack = combinations(not_wall, 3)
+ans = 0
 
-for i in range(len(check)):
-    visited=copy.deepcopy(graph)
-    tmp=0
+for step in crack:
+    tmp = [row[:] for row in graph]  # 원본 복사
+    for y, x in step:
+        tmp[y][x] = 1
+    for y, x in virus:
+        bfs(x, y)
 
-    for j in range(3):
-        y,x=check[i][j]
-        visited[y][x]=1
-
-    for y,x in virus:
-        bfs(x,y)
-
-    for j in range(n):
-        tmp+=visited[j].count(0)
-
-    ans=max(ans,tmp)
+    cnt = 0
+    for i in range(n):
+        for j in range(m):
+            if tmp[i][j] == 0:
+                cnt += 1
+    ans = max(ans, cnt)
 
 print(ans)
