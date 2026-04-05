@@ -1,63 +1,51 @@
 import sys
+input = sys.stdin.readline
 from collections import deque
+import heapq
 
-input=sys.stdin.readline
+import sys
+input = sys.stdin.readline
 
-###################################################################
-
-m,n,h=map(int,input().split())
-tomato=[]
-
-tomato = []
-for _ in range(h):
-    layer = [list(map(int,input().split())) for _ in range(n)]
-    tomato.append(layer)   # tomato[z][y][x] 가능
-
-## 이미 다 익고 시작한 경우############################
-flag = True
-for z in range(h):
-    for y in range(n):
-        if 0 in tomato[z][y]:
-            flag = False
-            break
-
-if flag:
-    print(0)
-    exit()
-###################################################
-
-# 상 하 좌 우 위 아래
-dx=[0,0,-1,1, 0, 0]
-dy=[1,-1,0,0, 0, 0]
-dz=[0, 0, 0, 0, 1, -1]
-
-q=deque([])
+dx=[0,0,0,0,-1,1]
+dy=[0,0,1,-1,0,0]
+dz=[1,-1,0,0,0,0]
 
 def bfs():
+    q=deque(tomato)
+
     while q:
-        z, y,x=q.popleft()
+        x,y,z=q.popleft()
+
         for i in range(6):
             nx,ny,nz=x+dx[i],y+dy[i],z+dz[i]
-            if 0<=ny<n and 0<=nx<m and 0<=nz<h and tomato[nz][ny][nx]==0:
-                tomato[nz][ny][nx]=tomato[z][y][x]+1
-                q.append((nz,ny,nx))
 
-for k in range(h):
-    for i in range(n):
-        for j in range(m):
-            if tomato[k][i][j] == 1:
-                q.append([k, i, j])
+            if 0<=nx<m and 0<=ny<n and 0<=nz<h and box[nz][ny][nx]==0:
+                box[nz][ny][nx]=box[z][y][x]+1
+                q.append((nx,ny,nz))
+
+m,n,h = map(int,input().split())
+box=[]
+tomato=[]
+
+for j in range(h):
+    layer=[]
+    for k in range(n):
+        x=list(map(int,input().split()))
+        for i in range(len(x)):
+            if x[i]==1:
+                tomato.append((i, k, j))
+        layer.append(x)
+    box.append(layer)
 
 bfs()
 
-##########최종 답 출력################################
-ans = 0
+mx = 0
 for z in range(h):
     for y in range(n):
-        for x in range(m):
-            if tomato[z][y][x] == 0:
-                print(-1)
-                exit()
-        ans = max(ans, max(tomato[z][y]))
+        if 0 in box[z][y]: # 익지 않은 토마토 체크
+            print(-1)
+            sys.exit()
+        # 한 줄(row)에서 가장 큰 값을 찾아 mx와 비교
+        mx = max(mx, max(box[z][y]))
 
-print(ans-1)
+print(mx - 1)
