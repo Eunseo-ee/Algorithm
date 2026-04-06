@@ -1,38 +1,35 @@
 import sys
-from collections import deque
-from itertools import combinations
-
 input = sys.stdin.readline
-sys.setrecursionlimit(10**6)
+from collections import deque
+import heapq
 
+import sys
+input = sys.stdin.readline
 
-def bfs(start):
-    q = deque()
-    q.append(n)
+n,k=map(int,input().split())
 
-    while q:
-        x = q.popleft()
-        dx = [-1, 1, x]
+# x+1, x-1,(1초) 2*x (0초)
+visited=[-1]*100001
 
-        if x == k:
-            return visited[x]
+def bfs(n,k):
+    queue=deque([n])
+    visited[n]=0
+    
+    while True:
+        x=queue.popleft()
 
-        for i in range(3):
-            nx = x + dx[i]
-            if 0 <= nx <= 100000 and (visited[nx] == -1 or visited[nx] > visited[x]):
-                if i == 2:
-                    visited[nx] = visited[x]
-                    q.appendleft(nx)
-                else:
-                    visited[nx] = visited[x] + 1
-                    q.append(nx)
-    return 0
+        if x==k:
+            return visited[k]
 
+        nx = x * 2
+        if 0 <= nx <= 100000 and visited[nx] == -1:
+            visited[nx] = visited[x]
+            queue.appendleft(nx)
+            
+        for nx in (x - 1, x + 1):
+            if 0 <= nx <= 100000 and visited[nx] == -1:
+                visited[nx] = visited[x] + 1
+                queue.append(nx)
+        
 
-n, k = map(int, input().split())
-
-visited = [-1 for i in range(100001)]
-
-visited[n] = 0
-bfs(n)
-print(visited[k])
+print(bfs(n,k))
